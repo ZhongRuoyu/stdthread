@@ -186,8 +186,7 @@ template <class Rp>
 class AssocState : public AssocSubState {
    public:
     using Base = AssocSubState;
-    using Up = typename std::aligned_storage_t<sizeof(Rp),
-                                               std::alignment_of<Rp>::value>;
+    using Up = std::aligned_storage_t<sizeof(Rp), std::alignment_of<Rp>::value>;
 
     template <class Arg>
     void SetValue(Arg &&arg) {
@@ -222,7 +221,7 @@ class AssocState : public AssocSubState {
         return std::move(*reinterpret_cast<Rp *>(&value_));
     }
 
-    typename std::add_lvalue_reference_t<Rp> Copy() {
+    std::add_lvalue_reference_t<Rp> Copy() {
         std::unique_lock<std::mutex> lk(this->mut_);
         this->SubWait(lk);
         if (this->exception_ != nullptr) {

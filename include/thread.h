@@ -149,9 +149,8 @@ class Thread {
 
     template <
         class Fp, class... Args,
-        class = typename std::enable_if_t<!std::is_same<
-            typename std::remove_cv_t<typename std::remove_reference_t<Fp>>,
-            Thread>::value>>
+        class = std::enable_if_t<!std::is_same<
+            std::remove_cv_t<std::remove_reference_t<Fp>>, Thread>::value>>
     explicit Thread(Fp &&f, Args &&...args) {
         using TSPtr = std::unique_ptr<detail::ThreadStruct>;
         TSPtr tsp(new detail::ThreadStruct);
