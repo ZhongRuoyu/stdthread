@@ -34,6 +34,7 @@ bin/examples/%: out/examples/%.o libstdthread.a
 	mkdir -p $(@D)
 	$(CXX) $(LDFLAGS) $(EXAMPLE_LDFLAGS) -o $@ $^
 
+
 .PHONY: clean
 clean:
 	rm -rf bin out libstdthread.a
