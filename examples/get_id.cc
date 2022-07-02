@@ -1,8 +1,8 @@
+#include <thread.h>
+
 #include <chrono>
 #include <iostream>
 #include <thread>
-
-#include "../src/thread.h"
 
 void foo() { std::this_thread::sleep_for(std::chrono::seconds(1)); }
 

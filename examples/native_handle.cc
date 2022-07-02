@@ -1,12 +1,11 @@
 #include <pthread.h>
+#include <thread.h>
 
 #include <chrono>
 #include <cstring>
 #include <iostream>
 #include <mutex>
 #include <thread>
-
-#include "../src/thread.h"
 
 std::mutex iomutex;
 void f(int num) {

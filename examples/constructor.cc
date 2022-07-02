@@ -1,9 +1,9 @@
+#include <thread.h>
+
 #include <chrono>
 #include <iostream>
 #include <thread>
 #include <utility>
-
-#include "../src/thread.h"
 
 void f1(int n) {
     for (int i = 0; i < 5; ++i) {
@@ -55,7 +55,7 @@ int main() {
     stdthread::Thread t4(
         std::move(t3));  // t4 is now running f2(). t3 is no longer a thread
     stdthread::Thread t5(&foo::bar, &f);  // t5 runs foo::bar() on object f
-    stdthread::Thread t6(b);              // t6 runs baz::operator() on a copy of object b
+    stdthread::Thread t6(b);  // t6 runs baz::operator() on a copy of object b
     t2.join();
     t4.join();
     t5.join();

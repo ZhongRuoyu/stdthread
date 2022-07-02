@@ -1,8 +1,8 @@
+#include <thread.h>
+
 #include <chrono>
 #include <iostream>
 #include <thread>
-
-#include "../src/thread.h"
 
 void independentThread() {
     std::cout << "Starting concurrent thread.\n";
