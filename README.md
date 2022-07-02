@@ -8,3 +8,6 @@ The implementation of stdthread is based on LLVM's
 ([license](https://github.com/llvm/llvm-project/blob/main/libcxx/LICENSE.TXT)).
 However, it only relies on the C++ standard library, can be built with any
 other C++ standard library implementations, like libstdc++.
+
+A lightweight version of stdthread is also available. Please see
+[minithread](https://github.com/ZhongRuoyu/minithread).
