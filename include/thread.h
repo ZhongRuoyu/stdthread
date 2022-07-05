@@ -13,8 +13,7 @@
 #include <system_error>
 #include <tuple>
 #include <type_traits>
-
-#include "tuple.h"
+#include <utility>
 
 namespace stdthread {
 
@@ -77,9 +76,17 @@ class ThreadSpecificPtr {
     pthread_key_t key_;
 };
 
+template <std::size_t N, typename Seq>
+struct OffsetSequence;
+
+template <std::size_t N, std::size_t... Indices>
+struct OffsetSequence<N, std::index_sequence<Indices...>> {
+    using type = std::index_sequence<Indices + N...>;
+};
+
 template <class TSp, class Fp, class... Args, size_t... Indices>
 inline void ThreadExecute(std::tuple<TSp, Fp, Args...> &t,
-                          TupleIndices<Indices...>) {
+                          std::index_sequence<Indices...>) {
     std::invoke(std::move(std::get<1>(t)), std::move(std::get<Indices>(t))...);
 }
 
@@ -87,8 +94,8 @@ template <class Fp>
 void *ThreadProxy(void *vp) {
     std::unique_ptr<Fp> p(static_cast<Fp *>(vp));
     ThreadLocalData().set_pointer(std::get<0>(*p).release());
-    using Index =
-        typename MakeTupleIndices<std::tuple_size<Fp>::value, 2>::type;
+    using Index = typename OffsetSequence<
+        2, std::make_index_sequence<std::tuple_size<Fp>::value - 2>>::type;
     ThreadExecute(*p, Index());
     return nullptr;
 }
