@@ -140,7 +140,9 @@ class Thread {
 
         template <class CharT, class Traits>
         friend std::basic_ostream<CharT, Traits> &operator<<(
-            std::basic_ostream<CharT, Traits> &os, id id);
+            std::basic_ostream<CharT, Traits> &os, id id) {
+            return os << id.id_;
+        }
 
        private:
         friend class Thread;
@@ -230,12 +232,6 @@ class Thread {
    private:
     pthread_t t_;
 };
-
-template <class CharT, class Traits>
-std::basic_ostream<CharT, Traits> &operator<<(
-    std::basic_ostream<CharT, Traits> &os, Thread::id id) {
-    return os << id.id_;
-}
 
 }  // namespace stdthread
 
