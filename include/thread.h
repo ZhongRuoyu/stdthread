@@ -235,4 +235,12 @@ class Thread {
 
 }  // namespace stdthread
 
+namespace std {
+
+inline void swap(stdthread::Thread &x, stdthread::Thread &y) noexcept {
+    x.swap(y);
+}
+
+}  // namespace std
+
 #endif  // STDTHREAD_THREAD_H_
