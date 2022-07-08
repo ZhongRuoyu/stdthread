@@ -2,19 +2,20 @@ CXXFLAGS += -std=c++17 -Iinclude -Isrc
 LDFLAGS += -pthread
 ARFLAGS +=
 
-EXAMPLE_CXXFLAGS += -fsanitize=address
-EXAMPLE_LDFLAGS += -fsanitize=address
-
-SRCS = $(wildcard src/*.cc)
+SRCS = $(shell find src -name *.cc)
 OBJS = $(SRCS:src/%.cc=out/%.o)
 
-EXAMPLE_SRCS = $(wildcard examples/*.cc)
-EXAMPLE_OBJS = $(EXAMPLE_SRCS:examples/%.cc=out/examples/%.o)
-EXAMPLE_BINS = $(EXAMPLE_SRCS:examples/%.cc=bin/examples/%)
+EXAMPLE_SRCS = $(shell find examples -name *.cc)
+EXAMPLE_OBJS = $(EXAMPLE_SRCS:%.cc=out/%.o)
+EXAMPLE_BINS = $(EXAMPLE_SRCS:%.cc=bin/%)
+EXAMPLE_CXXFLAGS +=
+EXAMPLE_LDFLAGS +=
 
 
+.PHONY: all
 all: libstdthread.a
 
+.PHONY: examples
 examples: $(EXAMPLE_BINS)
 
 
@@ -25,6 +26,7 @@ libstdthread.a: $(OBJS)
 out/%.o: src/%.cc
 	mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) -c -o $@ $^
+
 
 out/examples/%.o: examples/%.cc
 	mkdir -p $(@D)
