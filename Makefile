@@ -68,7 +68,7 @@ libstdthread.a: $(OBJS)
 
 out/%.o: src/%.cc
 	mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) $(COMMON_CXXFLAGS) $(SRC_DEPFLAGS) -c -o $@ $<
+	$(CXX) $(CXXFLAGS) $(COMMON_CXXFLAGS) $(SRC_CXXFLAGS) $(SRC_DEPFLAGS) -c -o $@ $<
 
 
 out/examples/%.o: examples/%.cc
