@@ -242,7 +242,7 @@ template <>
 struct hash<stdthread::Thread::id>
     : public std::unary_function<stdthread::Thread::id, size_t> {
     size_t operator()(stdthread::Thread::id v) const noexcept {
-        return hash<stdthread::Thread::id>()(v.id_);
+        return hash<stdthread::Thread::native_handle_type>()(v.id_);
     }
 };
 
