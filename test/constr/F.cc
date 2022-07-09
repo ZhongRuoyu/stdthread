@@ -6,8 +6,18 @@
 #include <new>
 #include <vector>
 
+#if defined(__has_feature)
+#if __has_feature(address_sanitizer)
+#define ASAN_IS_ON
+#endif
+#elif defined(__SANITIZE_ADDRESS__)
+#define ASAN_IS_ON
+#endif
+
 std::atomic<unsigned> throw_one(0xFFFF);
 std::atomic<unsigned> outstanding_new(0);
+
+#ifndef ASAN_IS_ON
 
 void *operator new(std::size_t s) {
     unsigned expected = throw_one;
@@ -25,6 +35,8 @@ void operator delete(void *p) noexcept {
     --outstanding_new;
     std::free(p);
 }
+
+#endif  // ASAN_IS_ON
 
 bool f_run = false;
 
@@ -100,6 +112,7 @@ class MoveOnly {
 int numAllocs;
 
 void test_throwing_new_during_thread_creation() {
+#ifndef ASAN_IS_ON
     throw_one = 0xFFF;
     {
         stdthread::Thread t(f);
@@ -124,6 +137,7 @@ void test_throwing_new_during_thread_creation() {
     }
     f_run = false;
     throw_one = 0xFFF;
+#endif  // ASAN_IS_ON
 }
 
 int main(int, char **) {
@@ -146,11 +160,13 @@ int main(int, char **) {
         assert(G::op_run);
     }
     G::op_run = false;
+#ifndef ASAN_IS_ON
 // The test below expects `stdthread::Thread` to call `new`, which may not be
 // the case for all implementations.
 #if defined(_LIBCPP_VERSION)
     assert(numAllocs > 0);  // libc++ should call new.
 #endif
+#endif  // ASAN_IS_ON
     if (numAllocs > 0) {
         try {
             throw_one = 0;

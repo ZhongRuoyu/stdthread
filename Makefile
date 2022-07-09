@@ -59,7 +59,7 @@ test: $(TEST_BINS)
 
 .PHONY: test-asan
 test-asan:
-	$(MAKE) CXXFLAGS="-fsanitize=address -O0 -g" LDFLAGS="-fsanitize=address" test
+	$(MAKE) CXXFLAGS="-O0 -g -fsanitize=address -fno-omit-frame-pointer" LDFLAGS="-fsanitize=address" test
 
 
 libstdthread.a: $(OBJS)
