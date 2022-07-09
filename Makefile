@@ -1,28 +1,33 @@
-CXXFLAGS += -std=c++17 -Iinclude -Isrc
-DEPFLAGS += -MT $@ -MMD -MP -MF out/$*.d
-ARFLAGS +=
-LDFLAGS += -pthread
+CXXFLAGS = -O2
+LDFLAGS =
+ARFLAGS = rv
 
-SRCS = $(shell find src -name *.cc)
+COMMON_CXXFLAGS = -std=c++17 -pthread -Iinclude -Isrc
+COMMON_LDFLAGS = -pthread
+
+SRCS = $(shell find src -name *.cc | sort)
 OBJS = $(SRCS:src/%.cc=out/%.o)
 DEPS = $(SRCS:src/%.cc=out/%.d)
+SRC_CXXFLAGS =
+SRC_DEPFLAGS = -MT $@ -MMD -MP -MF out/$*.d
+SRC_ARFLAGS =
 
-EXAMPLE_SRCS = $(shell find examples -name *.cc)
+EXAMPLE_SRCS = $(shell find examples -name *.cc | sort)
 EXAMPLE_OBJS = $(EXAMPLE_SRCS:%.cc=out/%.o)
 EXAMPLE_DEPS = $(EXAMPLE_SRCS:%.cc=out/%.d)
 EXAMPLE_BINS = $(EXAMPLE_SRCS:%.cc=bin/%)
-EXAMPLE_CXXFLAGS +=
-EXAMPLE_DEPFLAGS += -MT $@ -MMD -MP -MF out/examples/$*.d
-EXAMPLE_LDFLAGS += libstdthread.a
+EXAMPLE_CXXFLAGS =
+EXAMPLE_DEPFLAGS = -MT $@ -MMD -MP -MF out/examples/$*.d
+EXAMPLE_LDFLAGS = libstdthread.a
 
 
-TEST_SRCS = $(shell find test -name *.cc)
+TEST_SRCS = $(shell find test -name *.cc | sort)
 TEST_OBJS = $(TEST_SRCS:%.cc=out/%.o)
 TEST_DEPS = $(TEST_SRCS:%.cc=out/%.d)
 TEST_BINS = $(TEST_SRCS:%.cc=bin/%)
-TEST_CXXFLAGS += -g
-TEST_DEPFLAGS += -MT $@ -MMD -MP -MF out/test/$*.d
-TEST_LDFLAGS += libstdthread.a
+TEST_CXXFLAGS =
+TEST_DEPFLAGS = -MT $@ -MMD -MP -MF out/test/$*.d
+TEST_LDFLAGS = libstdthread.a
 
 
 .PHONY: all
@@ -52,32 +57,36 @@ test: $(TEST_BINS)
 		done
 	@echo "All tests passed."
 
+.PHONY: test-asan
+test-asan:
+	$(MAKE) CXXFLAGS="-fsanitize=address -O0 -g" LDFLAGS="-fsanitize=address" test
+
 
 libstdthread.a: $(OBJS)
 	mkdir -p $(@D)
-	$(AR) $(ARFLAGS) $@ $^
+	$(AR) $(ARFLAGS) $(SRC_ARFLAGS) $@ $^
 
 out/%.o: src/%.cc
 	mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) $(DEPFLAGS) -c -o $@ $<
+	$(CXX) $(CXXFLAGS) $(COMMON_CXXFLAGS) $(SRC_DEPFLAGS) -c -o $@ $<
 
 
 out/examples/%.o: examples/%.cc
 	mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) $(EXAMPLE_CXXFLAGS) $(EXAMPLE_DEPFLAGS) -c -o $@ $<
+	$(CXX) $(CXXFLAGS) $(COMMON_CXXFLAGS) $(EXAMPLE_CXXFLAGS) $(EXAMPLE_DEPFLAGS) -c -o $@ $<
 
 bin/examples/%: out/examples/%.o libstdthread.a
 	mkdir -p $(@D)
-	$(CXX) -o $@ $< $(LDFLAGS) $(EXAMPLE_LDFLAGS)
+	$(CXX) -o $@ $< $(LDFLAGS) $(COMMON_LDFLAGS) $(EXAMPLE_LDFLAGS)
 
 
 out/test/%.o: test/%.cc
 	mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) $(TEST_CXXFLAGS) $(TEST_DEPFLAGS) -c -o $@ $<
+	$(CXX) $(CXXFLAGS) $(COMMON_CXXFLAGS) $(TEST_CXXFLAGS) $(TEST_DEPFLAGS) -c -o $@ $<
 
 bin/test/%: out/test/%.o libstdthread.a
 	mkdir -p $(@D)
-	$(CXX) -o $@ $< $(LDFLAGS) $(TEST_LDFLAGS)
+	$(CXX) -o $@ $< $(LDFLAGS) $(COMMON_LDFLAGS) $(TEST_LDFLAGS)
 
 
 .PHONY: clean
