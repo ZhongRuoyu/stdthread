@@ -20,7 +20,6 @@ EXAMPLE_CXXFLAGS =
 EXAMPLE_DEPFLAGS = -MT $@ -MMD -MP -MF out/examples/$*.d
 EXAMPLE_LDFLAGS = libstdthread.a
 
-
 TEST_SRCS = $(shell find test -name *.cc | sort)
 TEST_OBJS = $(TEST_SRCS:%.cc=out/%.o)
 TEST_DEPS = $(TEST_SRCS:%.cc=out/%.d)
